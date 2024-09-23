@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xuantu.weixin.mapper.DistanceMapper">
+    <insert id="insertBatchSomeColumn" parameterType="com.xuantu.entity.Distance" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_distance (uid, hid, distance)
+        values
+        <foreach collection="distancesToSave" item="distances" separator=",">
+            (#{distances.uid}, #{distances.hid}, #{distances.distance})
+        </foreach>
+    </insert>
+</mapper>

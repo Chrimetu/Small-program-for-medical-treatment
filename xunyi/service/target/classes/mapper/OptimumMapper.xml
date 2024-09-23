@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xuantu.weixin.mapper.OptimumMapper">
+    <select id="selectCountById" resultType="int" parameterType="java.lang.Long">
+        SELECT COUNT(*) FROM optimum WHERE patient_id = #{id}
+    </select>
+    <insert id="save" parameterType="com.xuantu.entity.Optimum" useGeneratedKeys="true" keyProperty="id">
+        <!-- 执行插入操作 -->
+        insert into optimum (Travel, end_time, patient_id, hospital_id, start_time, arrival_time)
+        values
+        (#{optimums.Travel}, #{optimums.EndTime}, #{optimums.patientId}, #{optimums.hospitalId}, #{optimums.StartTime}, #{optimums.ArrivalTime})
+    </insert>
+    <update id="updateOptimum" parameterType="com.xuantu.entity.Optimum" useGeneratedKeys="true" keyProperty="id">
+    <!-- 执行更新操作 -->
+        UPDATE optimum SET
+        Travel = #{optimums.Travel},
+        end_time = #{optimums.EndTime}
+        patient_id = #{optimums.patientId}
+        hospital_id = #{optimums.hospitalId}
+        start_time = #{optimums.StartTime}
+        arrival_time = #{optimums.ArrivalTime}
+        WHERE patient_id = #{optimums.patientId}
+    </update>
+    <insert id="insertBatch" parameterType="com.xuantu.entity.Optimum" useGeneratedKeys="true" keyProperty="id">
+        <foreach collection="OptimumSolution" item="optimums" separator=",">
+            <!-- 判断数据库是否已存在相同主键的数据 -->
+
+            <if test="optimums.patientId != null and optimums.patientId != ''">
+                <choose>
+                    <when test="@org.apache.commons.lang3.math.NumberUtils@isNumber(selectCountById(optimums.patientId)) and @org.apache.commons.lang3.math.NumberUtils@toInt(selectCountById(optimums.patientId)) > 0">
+                        <!-- 执行更新操作 -->
+                        UPDATE optimum SET
+                        Travel = #{optimums.Travel},
+                        end_time = #{optimums.EndTime}
+                        patient_id = #{optimums.patientId}
+                        hospital_id = #{optimums.hospitalId}
+                        start_time = #{optimums.StartTime}
+                        arrival_time = #{optimums.ArrivalTime}
+                        WHERE patient_id = #{optimums.patientId}
+                    </when>
+                    <otherwise>
+                        <!-- 执行插入操作 -->
+                        insert into optimum (Travel, end_time, patient_id, hospital_id, start_time, arrival_time)
+                        values
+                        (#{optimums.Travel}, #{optimums.EndTime}, #{optimums.patientId}, #{optimums.hospitalId}, #{optimums.StartTime}, #{optimums.ArrivalTime})
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="optimums.patientId == null or optimums.patientId == ''">
+                <!-- 执行插入操作 -->
+                insert into optimum (Travel, end_time, patient_id, hospital_id, start_time, arrival_time)
+                values
+                (#{optimums.Travel}, #{optimums.EndTime}, #{optimums.patientId}, #{optimums.hospitalId}, #{optimums.StartTime}, #{optimums.ArrivalTime})
+            </if>
+        </foreach>
+    </insert>
+
+</mapper>
